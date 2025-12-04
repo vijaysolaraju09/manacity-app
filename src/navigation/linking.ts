@@ -15,6 +15,9 @@ export const linking: LinkingOptions<RootStackParamList> = {
           Services: 'services',
           Events: 'events',
           Profile: 'profile',
+          OrderHistory: 'profile/orders',
+          OrderDetails: 'profile/orders/:orderId',
+          OrderTracking: 'profile/orders/:orderId/tracking',
         },
       },
       Auth: {

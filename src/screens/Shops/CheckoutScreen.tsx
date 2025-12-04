@@ -19,9 +19,12 @@ const CheckoutScreen = () => {
   const [note, setNote] = useState('Cash on Delivery');
   const [address, setAddress] = useState('');
   const [method, setMethod] = useState<'cod' | 'pickup'>('cod');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleConfirm = () => {
-    submitOrder({ note: method === 'cod' ? 'Cash on Delivery' : 'Pickup from store', address });
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    await submitOrder({ note: method === 'cod' ? 'Cash on Delivery' : 'Pickup from store', address });
+    setSubmitting(false);
   };
 
   return (
@@ -83,7 +86,7 @@ const CheckoutScreen = () => {
         />
       </Card>
 
-      <PrimaryButton title="Confirm Order" onPress={handleConfirm} style={styles.button} />
+      <PrimaryButton title="Confirm Order" onPress={handleConfirm} style={styles.button} loading={submitting} />
 
       {orderConfirmation && (
         <Card style={styles.card}> 
