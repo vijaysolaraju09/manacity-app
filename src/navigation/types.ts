@@ -23,10 +23,10 @@ export type AuthStackParamList = {
 
 export type ShopsStackParamList = {
   ShopsList: undefined;
-  ShopDetails: undefined;
-  Products: undefined;
+  ShopDetails: { shopId: string };
+  Products: { shopId: string } | undefined;
   Cart: undefined;
-  Checkout: undefined;
+  Checkout: { orderNumber?: string } | undefined;
 };
 
 export type ServicesStackParamList = {
