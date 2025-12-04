@@ -35,7 +35,13 @@ export type ServicesStackParamList = {
   ServicesDirect: undefined;
   ServicesOffers: undefined;
   ServicesProviders: undefined;
-  ServicesRequestForm: undefined;
+  ServicesRequestForm:
+    | {
+        categoryId?: string;
+        providerId?: string;
+        mode?: 'public' | 'private' | 'direct';
+      }
+    | undefined;
 };
 
 export type EventsStackParamList = {
