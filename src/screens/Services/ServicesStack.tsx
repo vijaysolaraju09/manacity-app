@@ -17,7 +17,7 @@ const ServicesStack = () => (
     <Stack.Screen name="ServicesDirect" component={ServicesDirectScreen} />
     <Stack.Screen name="ServicesOffers" component={ServicesOffersScreen} />
     <Stack.Screen name="ServicesProviders" component={ServicesProvidersScreen} />
-    <Stack.Screen name="ServicesRequest" component={ServicesRequestFormScreen} />
+    <Stack.Screen name="ServicesRequestForm" component={ServicesRequestFormScreen} />
   </Stack.Navigator>
 );
 
