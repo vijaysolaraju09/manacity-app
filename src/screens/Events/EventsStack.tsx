@@ -12,10 +12,10 @@ const Stack = createNativeStackNavigator<EventsStackParamList>();
 const EventsStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="EventsList" component={EventsListScreen} options={{ title: 'Events' }} />
-    <Stack.Screen name="EventDetails" component={EventDetailsScreen} />
-    <Stack.Screen name="EventRegister" component={EventRegisterScreen} />
-    <Stack.Screen name="EventLeaderboard" component={EventLeaderboardScreen} />
-    <Stack.Screen name="EventUpdates" component={EventUpdatesScreen} />
+    <Stack.Screen name="EventDetails" component={EventDetailsScreen} options={{ title: 'Event' }} />
+    <Stack.Screen name="EventRegister" component={EventRegisterScreen} options={{ title: 'Registration' }} />
+    <Stack.Screen name="EventLeaderboard" component={EventLeaderboardScreen} options={{ title: 'Leaderboard' }} />
+    <Stack.Screen name="EventUpdates" component={EventUpdatesScreen} options={{ title: 'Updates' }} />
   </Stack.Navigator>
 );
 

@@ -46,10 +46,10 @@ export type ServicesStackParamList = {
 
 export type EventsStackParamList = {
   EventsList: undefined;
-  EventDetails: undefined;
-  EventRegister: undefined;
-  EventLeaderboard: undefined;
-  EventUpdates: undefined;
+  EventDetails: { eventId: string };
+  EventRegister: { eventId: string };
+  EventLeaderboard: { eventId: string };
+  EventUpdates: { eventId: string };
 };
 
 export type ProfileStackParamList = {
