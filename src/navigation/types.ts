@@ -51,7 +51,9 @@ export type ProfileStackParamList = {
   EditProfile: undefined;
   SwitchRole: undefined;
   Notifications: undefined;
-  Orders: undefined;
+  OrderHistory: undefined;
+  OrderDetails: { orderId: string };
+  OrderTracking: { orderId: string };
 };
 
 export type BusinessStackParamList = {

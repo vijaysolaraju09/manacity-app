@@ -6,6 +6,8 @@ import SwitchRoleScreen from './SwitchRoleScreen';
 import ProfileSettingsScreen from './ProfileSettingsScreen';
 import NotificationsCenterScreen from '../Notifications/NotificationsCenterScreen';
 import OrderHistoryScreen from '../Orders/OrderHistoryScreen';
+import OrderDetailsScreen from '../Orders/OrderDetailsScreen';
+import OrderTrackingScreen from '../Orders/OrderTrackingScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
@@ -16,6 +18,8 @@ const ProfileStack = () => (
     <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} />
     <Stack.Screen name="Notifications" component={NotificationsCenterScreen} />
     <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+    <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
+    <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
   </Stack.Navigator>
 );
 

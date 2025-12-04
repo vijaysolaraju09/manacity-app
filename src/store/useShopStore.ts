@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { fetchProducts, fetchShopDetails, fetchShops } from '../api/shops';
+import { createOrder } from '../api/orders';
 import { CartItem, Product, Shop } from '../types/shops';
 
 interface ShopState {
@@ -25,7 +26,7 @@ interface ShopState {
   updateQuantity: (productId: string, quantity: number) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
-  submitOrder: (payload: { note: string; address: string }) => void;
+  submitOrder: (payload: { note: string; address: string }) => Promise<void>;
 }
 
 const categoriesSeed = ['Groceries', 'Electronics', 'Cafe', 'Fashion', 'Bakery', 'Wellness'];
@@ -112,11 +113,21 @@ export const useShopStore = create<ShopState>((set, get) => ({
     })),
   removeFromCart: (productId) => set((state) => ({ cart: state.cart.filter((item) => item.id !== productId) })),
   clearCart: () => set({ cart: [], orderConfirmation: undefined }),
-  submitOrder: ({ note, address }) => {
-    const orderNumber = `ORD-${Math.floor(Math.random() * 90000 + 10000)}`;
-    const eta = '30-40 mins';
-    console.log('Submitting order', { note, address, items: get().cart });
-    set({ orderConfirmation: { orderNumber, eta }, cart: [] });
+  submitOrder: async ({ note, address }) => {
+    const { cart, currentShop } = get();
+    if (!cart.length || !currentShop) {
+      return;
+    }
+    const order = await createOrder({
+      items: cart,
+      shopId: currentShop.id,
+      shopName: currentShop.name,
+      shopArea: currentShop.area,
+      deliveryAddress: address,
+      paymentMethod: note,
+      customerName: 'You',
+    });
+    set({ orderConfirmation: { orderNumber: order.orderNumber, eta: order.eta || '30-40 mins' }, cart: [] });
   },
 }));
 
