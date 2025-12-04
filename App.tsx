@@ -9,6 +9,7 @@ import RootNavigator from './src/navigation/RootNavigator';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useNotifications } from './src/hooks/useNotifications';
 import { useNetwork } from './src/hooks/useNetwork';
+import { AuthProvider } from './src/context/AuthContext';
 
 const queryClient = new QueryClient();
 
@@ -38,11 +39,13 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AppProviders>
-          <StatusBar style="dark" />
-          <RootNavigator />
-          <Toast />
-        </AppProviders>
+        <AuthProvider>
+          <AppProviders>
+            <StatusBar style="dark" />
+            <RootNavigator />
+            <Toast />
+          </AppProviders>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

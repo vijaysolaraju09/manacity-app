@@ -16,6 +16,9 @@ import ProfileSetupScreen from '../screens/Auth/ProfileSetupScreen';
 import BusinessStack from '../screens/Business/BusinessStack';
 import AdminStack from '../screens/Admin/AdminStack';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../hooks/useAuth';
+import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
+import { View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -50,25 +53,56 @@ const BottomTabs = () => {
   );
 };
 
-const RootNavigator = () => {
-  return (
-    <NavigationContainer linking={linking} theme={DefaultTheme}>
-      <Stack.Navigator>
-        <Stack.Screen name="Root" component={BottomTabs} options={{ headerShown: false }} />
-        <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
-        <Stack.Screen name="Business" component={BusinessStack} options={{ headerShown: false }} />
-        <Stack.Screen name="Admin" component={AdminStack} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-
 const AuthStack = () => (
   <Auth.Navigator>
     <Auth.Screen name="Login" component={LoginScreen} />
     <Auth.Screen name="OTP" component={OTPScreen} />
-    <Auth.Screen name="ProfileSetup" component={ProfileSetupScreen} />
+    <Auth.Screen name="ProfileSetup" component={ProfileSetupScreen} options={{ title: 'Profile' }} />
   </Auth.Navigator>
 );
+
+const RootNavigator = () => {
+  const { user, loading, onboardingComplete, activeRole } = useAuth();
+  const theme = useTheme();
+  const needsProfile = !!(user && (!user.name || !user.location));
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  const renderStack = () => {
+    if (!onboardingComplete) {
+      return <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ headerShown: false }} />;
+    }
+
+    if (!user) {
+      return <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />;
+    }
+
+    if (needsProfile) {
+      return <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} options={{ headerShown: false }} />;
+    }
+
+    if (activeRole === 'business') {
+      return <Stack.Screen name="Business" component={BusinessStack} options={{ headerShown: false }} />;
+    }
+
+    if (activeRole === 'admin') {
+      return <Stack.Screen name="Admin" component={AdminStack} options={{ headerShown: false }} />;
+    }
+
+    return <Stack.Screen name="Root" component={BottomTabs} options={{ headerShown: false }} />;
+  };
+
+  return (
+    <NavigationContainer linking={linking} theme={DefaultTheme}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>{renderStack()}</Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default RootNavigator;

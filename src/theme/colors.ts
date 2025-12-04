@@ -4,6 +4,7 @@ export const palette = {
   accent: '#FFB703',
   background: '#F7F9FC',
   surface: '#FFFFFF',
+  card: '#FFFFFF',
   text: '#1A202C',
   muted: '#718096',
   border: '#E2E8F0',
