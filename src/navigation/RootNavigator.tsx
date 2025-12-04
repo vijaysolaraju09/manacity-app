@@ -19,6 +19,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import { View, ActivityIndicator } from 'react-native';
+import { selectCartCount, useShopStore } from '../store/useShopStore';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -26,6 +27,7 @@ const Auth = createNativeStackNavigator<AuthStackParamList>();
 
 const BottomTabs = () => {
   const theme = useTheme();
+  const cartCount = useShopStore(selectCartCount);
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -42,6 +44,7 @@ const BottomTabs = () => {
           };
           return <Ionicons name={icons[route.name as keyof TabParamList]} size={size} color={color} />;
         },
+        tabBarBadge: route.name === 'Shops' && cartCount > 0 ? cartCount : undefined,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
