@@ -3,6 +3,8 @@ export type RootStackParamList = {
   Auth: undefined;
   Business: undefined;
   Admin: undefined;
+  Onboarding: undefined;
+  ProfileSetup: undefined;
 };
 
 export type TabParamList = {

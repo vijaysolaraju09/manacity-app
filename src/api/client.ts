@@ -1,17 +1,20 @@
 import axios from 'axios';
 import { getToken } from '../auth/secureStore';
 
-const client = axios.create({
-  baseURL: 'https://example.com/api',
+const apiClient = axios.create({
+  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://api.manacity.local',
   timeout: 10000,
 });
 
-client.interceptors.request.use(async (config) => {
+apiClient.interceptors.request.use(async (config) => {
   const token = await getToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${token}`,
+    };
   }
   return config;
 });
 
-export default client;
+export default apiClient;
