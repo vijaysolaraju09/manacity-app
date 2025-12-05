@@ -8,6 +8,32 @@ export interface Product {
   category?: string;
 }
 
+export interface BusinessHours {
+  day: string;
+  open: string;
+  close: string;
+  closed?: boolean;
+}
+
+export interface BusinessShopProfile extends Shop {
+  description?: string;
+  phone?: string;
+  coverImage?: string;
+  workingHours: BusinessHours[];
+}
+
+export interface RatingSummary {
+  average: number;
+  count: number;
+  breakdown: Record<string, number>;
+}
+
+export interface BusinessAnalytics {
+  totalOrders: number;
+  monthlyOrders: { month: string; count: number }[];
+  ratingSummary: RatingSummary;
+}
+
 export interface Shop {
   id: string;
   name: string;
