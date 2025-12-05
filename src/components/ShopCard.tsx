@@ -1,9 +1,10 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { Card, ThemedText } from './Themed';
 import { Shop } from '../types/shops';
+import { ShimmerImage } from './loading/ShimmerImage';
 
 interface Props {
   shop: Shop;
@@ -13,11 +14,12 @@ interface Props {
 const ShopCard: React.FC<Props> = ({ shop, onPress }) => {
   const theme = useTheme();
   return (
-    <Pressable onPress={onPress} accessibilityRole="button">
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Shop ${shop.name}`}>
       <Card style={styles.card}>
-        <Image
+        <ShimmerImage
           source={{ uri: shop.image || 'https://via.placeholder.com/400x200.png?text=Shop' }}
           style={styles.image}
+          accessibilityLabel={`${shop.name} cover`}
         />
         <View style={styles.content}>
           <View style={styles.headerRow}>

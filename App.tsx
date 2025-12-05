@@ -11,7 +11,15 @@ import { useNetwork } from './src/hooks/useNetwork';
 import { AuthProvider } from './src/context/AuthContext';
 import { NotificationsProvider } from './src/context/NotificationsContext';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      retry: 1,
+    },
+  },
+});
 
 const AppProviders = ({ children }: { children: React.ReactNode }) => {
   useNetwork();

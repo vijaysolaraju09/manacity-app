@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FlatList, View, ActivityIndicator, StyleSheet } from 'react-native';
+import { FlatList, View, ActivityIndicator, StyleSheet, RefreshControl } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { Screen } from '../../components/Screen';
@@ -10,6 +10,8 @@ import ShopCard from '../../components/ShopCard';
 import { ShopsStackParamList } from '../../navigation/types';
 import { useShopStore } from '../../store/useShopStore';
 import { useTheme } from '../../context/ThemeContext';
+import Skeleton, { SkeletonBlock } from '../../components/loading/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 type Navigation = NativeStackNavigationProp<ShopsStackParamList, 'ShopsList'>;
 
@@ -24,6 +26,7 @@ const ShopsListScreen = () => {
     suggestions,
     hasMore,
     loading,
+    error,
     setSearchQuery,
     setCategory,
     loadShops,
@@ -78,6 +81,43 @@ const ShopsListScreen = () => {
         contentContainerStyle={{ paddingBottom: theme.spacing.xl, paddingHorizontal: theme.spacing.lg }}
         onEndReached={() => loadMoreShops()}
         onEndReachedThreshold={0.4}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={() => loadShops(true)} tintColor={theme.colors.primary} />}
+        ListEmptyComponent={() => {
+          if (loading) {
+            return (
+              <View style={styles.skeletonList}>
+                {[1, 2, 3].map((idx) => (
+                  <View key={idx} style={styles.skeletonCard}>
+                    <Skeleton height={160} />
+                    <View style={{ padding: theme.spacing.md }}>
+                      <SkeletonBlock />
+                    </View>
+                  </View>
+                ))}
+              </View>
+            );
+          }
+
+          if (error) {
+            return (
+              <EmptyState
+                title="Unable to load shops"
+                description={error}
+                actionLabel="Retry"
+                onActionPress={() => loadShops(true)}
+              />
+            );
+          }
+
+          return (
+            <EmptyState
+              title="No shops found"
+              description="Try another search or pull to refresh to see what's nearby."
+              actionLabel="Refresh"
+              onActionPress={() => loadShops(true)}
+            />
+          );
+        }}
         ListFooterComponent={() =>
           loading ? (
             <View style={styles.loader}>
@@ -117,6 +157,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 12,
     color: '#4A5568',
+  },
+  skeletonList: {
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+    gap: 16,
+  },
+  skeletonCard: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
 });
 

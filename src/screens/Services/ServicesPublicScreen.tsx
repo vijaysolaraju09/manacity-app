@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Modal, View, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Modal, View, StyleSheet, Pressable, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Screen } from '../../components/Screen';
 import { Card, ThemedText } from '../../components/Themed';
@@ -15,6 +15,7 @@ import {
 import { useServicesStore } from '../../store/useServicesStore';
 import { ServiceStatus } from '../../types/services';
 import { useTheme } from '../../context/ThemeContext';
+import Skeleton from '../../components/loading/Skeleton';
 
 const statusFilters: (ServiceStatus | 'All')[] = ['All', 'Open', 'AwaitingApproval', 'Accepted', 'InProgress'];
 
@@ -29,6 +30,21 @@ const ServicesPublicScreen = () => {
   const [offerPrice, setOfferPrice] = useState('');
   const [activeRequestId, setActiveRequestId] = useState<string | undefined>();
   const [selectedProviderId, setSelectedProviderId] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      setIsLoading(false);
+    }, 800);
+  };
 
   const publicRequests = useMemo(
     () =>
@@ -65,7 +81,16 @@ const ServicesPublicScreen = () => {
   };
 
   return (
-    <Screen>
+    <Screen
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={theme.colors.primary}
+          accessibilityLabel="Pull to refresh services"
+        />
+      }
+    >
       <ThemedText accessibilityRole="header" style={styles.heading}>
         Services Catalog
       </ThemedText>
@@ -103,6 +128,7 @@ const ServicesPublicScreen = () => {
           {statusFilters.map((item) => (
             <Pressable
               key={item}
+              accessibilityLabel={`Filter ${item}`}
               onPress={() => setFilter(item)}
               style={({ pressed }) => [
                 styles.filterChip,
@@ -117,18 +143,30 @@ const ServicesPublicScreen = () => {
             </Pressable>
           ))}
         </View>
-        {publicRequests.map((request) => (
-          <View key={request.id} style={{ marginTop: 12 }}>
-            <ServiceRequestCard
-              request={request}
-              providers={providers}
-              onOffer={() => openOfferModal(request.id)}
-              onRespondOffer={(offerId, decision) => respondToOffer({ requestId: request.id, offerId, decision })}
-              onUpdateStatus={(status) => updateStatus(request.id, status, 'Requester updated status')}
-              actions={<ServiceStatusTimeline timeline={request.timeline} />}
-            />
+        {isLoading ? (
+          <View style={{ gap: 12, marginTop: 12 }}>
+            {[1, 2, 3].map((idx) => (
+              <View key={idx} style={{ gap: 10 }}>
+                <Skeleton height={18} width="60%" />
+                <Skeleton height={16} width="80%" />
+                <Skeleton height={14} width="50%" />
+              </View>
+            ))}
           </View>
-        ))}
+        ) : (
+          publicRequests.map((request) => (
+            <View key={request.id} style={{ marginTop: 12 }}>
+              <ServiceRequestCard
+                request={request}
+                providers={providers}
+                onOffer={() => openOfferModal(request.id)}
+                onRespondOffer={(offerId, decision) => respondToOffer({ requestId: request.id, offerId, decision })}
+                onUpdateStatus={(status) => updateStatus(request.id, status, 'Requester updated status')}
+                actions={<ServiceStatusTimeline timeline={request.timeline} />}
+              />
+            </View>
+          ))
+        )}
       </Card>
 
       <Card>

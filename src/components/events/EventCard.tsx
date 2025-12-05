@@ -1,9 +1,10 @@
 import React from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Event } from '../../types/events';
 import { ThemedText } from '../Themed';
 import { useTheme } from '../../context/ThemeContext';
 import { formatEventDateTime } from '../../utils/events';
+import { ShimmerImage } from '../loading/ShimmerImage';
 
 interface Props {
   event: Event;
@@ -18,7 +19,12 @@ export const EventCard: React.FC<Props> = ({ event, onPress }) => {
       accessibilityRole="button"
       style={({ pressed }) => [styles.card, { backgroundColor: theme.colors.surface, opacity: pressed ? 0.96 : 1 }]}
     >
-      <Image source={{ uri: event.image }} style={styles.image} accessibilityIgnoresInvertColors />
+      <ShimmerImage
+        source={{ uri: event.image }}
+        style={styles.image}
+        accessibilityLabel={`${event.title} banner`}
+        accessibilityIgnoresInvertColors
+      />
       <View style={styles.content}>
         <View style={styles.headerRow}>
           <ThemedText style={styles.title}>{event.title}</ThemedText>
