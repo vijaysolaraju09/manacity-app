@@ -7,14 +7,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import RootNavigator from './src/navigation/RootNavigator';
 import { ThemeProvider } from './src/context/ThemeContext';
-import { useNotifications } from './src/hooks/useNotifications';
 import { useNetwork } from './src/hooks/useNetwork';
 import { AuthProvider } from './src/context/AuthContext';
+import { NotificationsProvider } from './src/context/NotificationsContext';
 
 const queryClient = new QueryClient();
 
 const AppProviders = ({ children }: { children: React.ReactNode }) => {
-  useNotifications();
   useNetwork();
   return <>{children}</>;
 };
@@ -40,11 +39,13 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <AppProviders>
-            <StatusBar style="dark" />
-            <RootNavigator />
-            <Toast />
-          </AppProviders>
+          <NotificationsProvider>
+            <AppProviders>
+              <StatusBar style="dark" />
+              <RootNavigator />
+              <Toast />
+            </AppProviders>
+          </NotificationsProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

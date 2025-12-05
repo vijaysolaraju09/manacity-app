@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { linking } from './linking';
 import { AuthStackParamList, RootStackParamList, TabParamList } from './types';
+import { navigationRef } from './navigationRef';
 import HomeScreen from '../screens/HomeScreen';
 import ShopsStack from '../screens/Shops/ShopsStack';
 import ServicesStack from '../screens/Services/ServicesStack';
@@ -20,6 +21,7 @@ import { useAuth } from '../hooks/useAuth';
 import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
 import { View, ActivityIndicator } from 'react-native';
 import { selectCartCount, useShopStore } from '../store/useShopStore';
+import { useNotifications } from '../hooks/useNotifications';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -28,6 +30,7 @@ const Auth = createNativeStackNavigator<AuthStackParamList>();
 const BottomTabs = () => {
   const theme = useTheme();
   const cartCount = useShopStore(selectCartCount);
+  const { unreadCount } = useNotifications();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -44,7 +47,9 @@ const BottomTabs = () => {
           };
           return <Ionicons name={icons[route.name as keyof TabParamList]} size={size} color={color} />;
         },
-        tabBarBadge: route.name === 'Shops' && cartCount > 0 ? cartCount : undefined,
+        tabBarBadge:
+          (route.name === 'Shops' && cartCount > 0 ? cartCount : undefined) ||
+          (route.name === 'Profile' && unreadCount > 0 ? unreadCount : undefined),
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -102,7 +107,7 @@ const RootNavigator = () => {
   };
 
   return (
-    <NavigationContainer linking={linking} theme={DefaultTheme}>
+    <NavigationContainer linking={linking} theme={DefaultTheme} ref={navigationRef}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>{renderStack()}</Stack.Navigator>
     </NavigationContainer>
   );

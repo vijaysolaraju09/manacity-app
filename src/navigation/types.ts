@@ -1,5 +1,7 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
+
 export type RootStackParamList = {
-  Root: undefined;
+  Root: NavigatorScreenParams<TabParamList> | undefined;
   Auth: undefined;
   Business: undefined;
   Admin: undefined;
@@ -9,10 +11,10 @@ export type RootStackParamList = {
 
 export type TabParamList = {
   Home: undefined;
-  Shops: undefined;
-  Services: undefined;
-  Events: undefined;
-  Profile: undefined;
+  Shops: NavigatorScreenParams<ShopsStackParamList> | undefined;
+  Services: NavigatorScreenParams<ServicesStackParamList> | undefined;
+  Events: NavigatorScreenParams<EventsStackParamList> | undefined;
+  Profile: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 export type AuthStackParamList = {
@@ -42,6 +44,7 @@ export type ServicesStackParamList = {
         mode?: 'public' | 'private' | 'direct';
       }
     | undefined;
+  ServiceRequestDetails: { requestId: string };
 };
 
 export type EventsStackParamList = {
@@ -60,6 +63,7 @@ export type ProfileStackParamList = {
   OrderHistory: undefined;
   OrderDetails: { orderId: string };
   OrderTracking: { orderId: string };
+  Announcement: { announcementId?: string; title?: string; body?: string };
 };
 
 export type BusinessStackParamList = {

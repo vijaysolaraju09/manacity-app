@@ -12,12 +12,39 @@ export const linking: LinkingOptions<RootStackParamList> = {
         screens: {
           Home: 'home',
           Shops: 'shops',
-          Services: 'services',
-          Events: 'events',
-          Profile: 'profile',
-          OrderHistory: 'profile/orders',
-          OrderDetails: 'profile/orders/:orderId',
-          OrderTracking: 'profile/orders/:orderId/tracking',
+          Services: {
+            path: 'services',
+            screens: {
+              ServicesPublic: '',
+              ServicesPrivate: 'private',
+              ServicesDirect: 'direct',
+              ServicesOffers: 'offers',
+              ServicesProviders: 'providers',
+              ServicesRequestForm: 'request',
+              ServiceRequestDetails: 'request/:requestId',
+            },
+          },
+          Events: {
+            path: 'events',
+            screens: {
+              EventsList: '',
+              EventDetails: ':eventId',
+              EventRegister: ':eventId/register',
+              EventLeaderboard: ':eventId/leaderboard',
+              EventUpdates: ':eventId/updates',
+            },
+          },
+          Profile: {
+            path: 'profile',
+            screens: {
+              ProfileSettings: '',
+              Notifications: 'notifications',
+              OrderHistory: 'orders',
+              OrderDetails: 'orders/:orderId',
+              OrderTracking: 'orders/:orderId/tracking',
+              Announcement: 'announcements/:announcementId?',
+            },
+          },
         },
       },
       Auth: {
