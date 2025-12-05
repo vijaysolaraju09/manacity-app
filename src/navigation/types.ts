@@ -64,6 +64,9 @@ export type ProfileStackParamList = {
   OrderDetails: { orderId: string };
   OrderTracking: { orderId: string };
   Announcement: { announcementId?: string; title?: string; body?: string };
+  About: undefined;
+  HelpCenter: undefined;
+  PrivacyPolicy: undefined;
 };
 
 export type BusinessStackParamList = {
