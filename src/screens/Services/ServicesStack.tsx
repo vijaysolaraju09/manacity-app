@@ -7,6 +7,7 @@ import ServicesDirectScreen from './ServicesDirectScreen';
 import ServicesOffersScreen from './ServicesOffersScreen';
 import ServicesProvidersScreen from './ServicesProvidersScreen';
 import ServicesRequestFormScreen from './ServicesRequestFormScreen';
+import ServiceRequestDetailsScreen from './ServiceRequestDetailsScreen';
 
 const Stack = createNativeStackNavigator<ServicesStackParamList>();
 
@@ -18,6 +19,7 @@ const ServicesStack = () => (
     <Stack.Screen name="ServicesOffers" component={ServicesOffersScreen} />
     <Stack.Screen name="ServicesProviders" component={ServicesProvidersScreen} />
     <Stack.Screen name="ServicesRequestForm" component={ServicesRequestFormScreen} />
+    <Stack.Screen name="ServiceRequestDetails" component={ServiceRequestDetailsScreen} />
   </Stack.Navigator>
 );
 
