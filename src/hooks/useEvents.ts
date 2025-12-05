@@ -62,8 +62,44 @@ export const useLeaderboard = (eventId?: string, enabled = true) =>
 export const useEventRegistration = (eventId?: string) => {
   const queryClient = useQueryClient();
 
+  const updateEventCaches = (updater: (event: Event) => Event) => {
+    const listQueries = queryClient.getQueryCache().findAll({ queryKey: ['events'] });
+    listQueries.forEach((query) => {
+      const data = queryClient.getQueryData<Event[]>(query.queryKey);
+      if (data) {
+        queryClient.setQueryData<Event[]>(query.queryKey, data.map((ev) => (ev.id === eventId ? updater(ev) : ev)));
+      }
+    });
+
+    const detail = queryClient.getQueryData<Event>(['event', eventId]);
+    if (detail) {
+      queryClient.setQueryData<Event>(['event', eventId], updater(detail));
+    }
+  };
+
   const register = useMutation({
     mutationFn: (remindersEnabled?: boolean) => registerForEvent(eventId as string, remindersEnabled),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['events'] });
+      await queryClient.cancelQueries({ queryKey: ['event', eventId] });
+      const previousLists = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ['events'] })
+        .map((query) => ({ queryKey: query.queryKey, data: query.state.data as Event[] | undefined }));
+      const previousDetail = queryClient.getQueryData<Event>(['event', eventId]);
+
+      updateEventCaches((event) => ({ ...event, isRegistered: true }));
+
+      return { previousLists, previousDetail };
+    },
+    onError: (_err, _vars, context) => {
+      context?.previousLists?.forEach(({ queryKey, data }) => {
+        if (data) queryClient.setQueryData(queryKey, data);
+      });
+      if (context?.previousDetail) {
+        queryClient.setQueryData(['event', eventId], context.previousDetail);
+      }
+    },
     onSuccess: async (_, remindersEnabled = true) => {
       Toast.show({ type: 'success', text1: 'Registered', text2: 'You are confirmed for this event.' });
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -81,6 +117,27 @@ export const useEventRegistration = (eventId?: string) => {
 
   const unregister = useMutation({
     mutationFn: () => unregisterFromEvent(eventId as string),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['events'] });
+      await queryClient.cancelQueries({ queryKey: ['event', eventId] });
+      const previousLists = queryClient
+        .getQueryCache()
+        .findAll({ queryKey: ['events'] })
+        .map((query) => ({ queryKey: query.queryKey, data: query.state.data as Event[] | undefined }));
+      const previousDetail = queryClient.getQueryData<Event>(['event', eventId]);
+
+      updateEventCaches((event) => ({ ...event, isRegistered: false }));
+
+      return { previousLists, previousDetail };
+    },
+    onError: (_err, _vars, context) => {
+      context?.previousLists?.forEach(({ queryKey, data }) => {
+        if (data) queryClient.setQueryData(queryKey, data);
+      });
+      if (context?.previousDetail) {
+        queryClient.setQueryData(['event', eventId], context.previousDetail);
+      }
+    },
     onSuccess: async () => {
       Toast.show({ type: 'info', text1: 'Registration removed', text2: 'You will no longer receive updates.' });
       queryClient.invalidateQueries({ queryKey: ['events'] });

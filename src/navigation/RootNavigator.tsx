@@ -107,8 +107,14 @@ const RootNavigator = () => {
   };
 
   return (
-    <NavigationContainer linking={linking} theme={DefaultTheme} ref={navigationRef}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>{renderStack()}</Stack.Navigator>
+    <NavigationContainer
+      testID="app-root"
+      linking={linking}
+      theme={DefaultTheme}
+      ref={navigationRef}
+      documentTitle={{ formatter: (options) => options?.title ?? 'Manacity' }}
+    >
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>{renderStack()}</Stack.Navigator>
     </NavigationContainer>
   );
 };

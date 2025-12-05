@@ -12,6 +12,7 @@ interface ShopState {
   page: number;
   hasMore: boolean;
   loading: boolean;
+  error?: string;
   currentShop?: Shop;
   products: Product[];
   cart: CartItem[];
@@ -68,15 +69,20 @@ export const useShopStore = create<ShopState>((set, get) => ({
     })),
   loadShops: async (reset = false) => {
     const { searchQuery, selectedCategory } = get();
-    set({ loading: true });
+    set({ loading: true, error: undefined });
     const page = reset ? 1 : get().page;
-    const response = await fetchShops(page, searchQuery, selectedCategory);
-    set((state) => ({
-      shops: reset ? response.items : [...state.shops, ...response.items],
-      hasMore: response.hasMore,
-      page: page + 1,
-      loading: false,
-    }));
+    try {
+      const response = await fetchShops(page, searchQuery, selectedCategory);
+      set((state) => ({
+        shops: reset ? response.items : [...state.shops, ...response.items],
+        hasMore: response.hasMore,
+        page: page + 1,
+        loading: false,
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to load shops';
+      set({ loading: false, error: message });
+    }
   },
   loadMoreShops: async () => {
     const { hasMore, loading } = get();

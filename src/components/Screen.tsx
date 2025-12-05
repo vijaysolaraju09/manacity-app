@@ -6,12 +6,15 @@ interface ScreenProps {
   children: ReactNode;
   scroll?: boolean;
   style?: ViewStyle;
+  refreshControl?: React.ReactElement;
 }
 
-export const Screen: React.FC<ScreenProps> = ({ children, scroll = true, style }) => {
+export const Screen: React.FC<ScreenProps> = ({ children, scroll = true, style, refreshControl }) => {
   const theme = useTheme();
   const content = scroll ? (
-    <ScrollView contentContainerStyle={[styles.content, { padding: theme.spacing.lg }, style]}>{children}</ScrollView>
+    <ScrollView refreshControl={refreshControl} contentContainerStyle={[styles.content, { padding: theme.spacing.lg }, style]}>
+      {children}
+    </ScrollView>
   ) : (
     <SafeAreaView style={[styles.content, { padding: theme.spacing.lg }, style]}>{children}</SafeAreaView>
   );

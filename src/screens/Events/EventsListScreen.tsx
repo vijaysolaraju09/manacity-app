@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Screen } from '../../components/Screen';
 import { ThemedText } from '../../components/Themed';
@@ -7,6 +7,8 @@ import { EventCard } from '../../components/events/EventCard';
 import { useEvents } from '../../hooks/useEvents';
 import { EventsStackParamList } from '../../navigation/types';
 import { useTheme } from '../../context/ThemeContext';
+import Skeleton, { SkeletonBlock } from '../../components/loading/Skeleton';
+import EmptyState from '../../components/EmptyState';
 
 const tabs = [
   { key: 'all', label: 'All' as const },
@@ -27,7 +29,7 @@ const EventsListScreen: React.FC<EventsListProps> = ({ navigation }) => {
     }),
     [activeTab],
   );
-  const { data, isLoading, refetch, isRefetching } = useEvents(filters);
+  const { data, isLoading, refetch, isRefetching, isError, error } = useEvents(filters);
 
   const renderTabs = () => (
     <View style={styles.tabRow}>
@@ -63,9 +65,23 @@ const EventsListScreen: React.FC<EventsListProps> = ({ navigation }) => {
       </ThemedText>
       {renderTabs()}
       {isLoading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator color={theme.colors.primary} />
+        <View style={styles.skeletons}>
+          {[1, 2, 3].map((idx) => (
+            <View key={idx} style={styles.skeletonCard}>
+              <Skeleton height={160} />
+              <View style={{ padding: theme.spacing.md }}>
+                <SkeletonBlock />
+              </View>
+            </View>
+          ))}
         </View>
+      ) : isError ? (
+        <EmptyState
+          title="Unable to load events"
+          description={error?.message ?? 'Please check your connection and try again.'}
+          actionLabel="Retry"
+          onActionPress={refetch}
+        />
       ) : (
         <FlatList
           data={data || []}
@@ -74,11 +90,22 @@ const EventsListScreen: React.FC<EventsListProps> = ({ navigation }) => {
             <EventCard event={item} onPress={() => navigation.navigate('EventDetails', { eventId: item.id })} />
           )}
           ListEmptyComponent={
-            <ThemedText style={{ color: theme.colors.muted }}>No events in this tab. Check back soon.</ThemedText>
+            <EmptyState
+              title="No events yet"
+              description="Check back soon or pull to refresh."
+              actionLabel="Refresh"
+              onActionPress={refetch}
+            />
           }
           contentContainerStyle={styles.listContent}
-          refreshing={isRefetching}
-          onRefresh={refetch}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={theme.colors.primary}
+              accessibilityLabel="Pull to refresh events"
+            />
+          }
         />
       )}
     </Screen>
@@ -109,6 +136,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  skeletons: {
+    gap: 12,
+  },
+  skeletonCard: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
 });
 
