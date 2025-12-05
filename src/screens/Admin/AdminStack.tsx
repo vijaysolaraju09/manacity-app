@@ -7,6 +7,7 @@ import AdminShopsScreen from './AdminShopsScreen';
 import AdminServicesScreen from './AdminServicesScreen';
 import AdminEventsScreen from './AdminEventsScreen';
 import AdminAssignmentsScreen from './AdminAssignmentsScreen';
+import AdminAnnouncementsScreen from './AdminAnnouncementsScreen';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 
@@ -18,6 +19,7 @@ const AdminStack = () => (
     <Stack.Screen name="AdminServices" component={AdminServicesScreen} />
     <Stack.Screen name="AdminEvents" component={AdminEventsScreen} />
     <Stack.Screen name="AdminAssignments" component={AdminAssignmentsScreen} />
+    <Stack.Screen name="AdminAnnouncements" component={AdminAnnouncementsScreen} options={{ title: 'Announcements' }} />
   </Stack.Navigator>
 );
 

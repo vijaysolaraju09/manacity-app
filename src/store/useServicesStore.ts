@@ -15,6 +15,11 @@ interface ServicesState {
   providers: ServiceProvider[];
   requests: ServiceRequest[];
   notifications: ServiceNotification[];
+  createCategory: (payload: Pick<ServiceCategory, 'name' | 'summary'> & { image?: string }) => void;
+  updateCategory: (categoryId: string, updates: Partial<ServiceCategory>) => void;
+  deleteCategory: (categoryId: string) => void;
+  assignProviderToCategory: (payload: { providerId: string; categoryId: string }) => void;
+  removeProviderFromCategory: (payload: { providerId: string; categoryId: string }) => void;
   createPublicRequest: (payload: Omit<ServiceRequest, 'id' | 'status' | 'timeline' | 'offers' | 'type' | 'contactReleased'>) => void;
   createPrivateRequest: (
     payload: Omit<ServiceRequest, 'id' | 'status' | 'timeline' | 'offers' | 'type' | 'contactReleased' | 'directProviderId'>,
@@ -230,6 +235,48 @@ export const useServicesStore = create<ServicesState>((set, get) => ({
   providers: seedProviders,
   requests: seedRequests,
   notifications: [],
+  createCategory: (payload) =>
+    set((state) => ({
+      categories: [
+        ...state.categories,
+        {
+          id: payload.name.toLowerCase().replace(/\s+/g, '-'),
+          image:
+            payload.image ||
+            'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=800&q=80',
+          name: payload.name,
+          summary: payload.summary,
+        },
+      ],
+    })),
+  updateCategory: (categoryId, updates) =>
+    set((state) => ({
+      categories: state.categories.map((category) => (category.id === categoryId ? { ...category, ...updates } : category)),
+    })),
+  deleteCategory: (categoryId) =>
+    set((state) => ({
+      categories: state.categories.filter((category) => category.id !== categoryId),
+      providers: state.providers.map((provider) => ({
+        ...provider,
+        services: provider.services.filter((service) => service !== categoryId),
+      })),
+    })),
+  assignProviderToCategory: ({ providerId, categoryId }) =>
+    set((state) => ({
+      providers: state.providers.map((provider) =>
+        provider.id === providerId
+          ? { ...provider, services: Array.from(new Set([...provider.services, categoryId])) }
+          : provider,
+      ),
+    })),
+  removeProviderFromCategory: ({ providerId, categoryId }) =>
+    set((state) => ({
+      providers: state.providers.map((provider) =>
+        provider.id === providerId
+          ? { ...provider, services: provider.services.filter((service) => service !== categoryId) }
+          : provider,
+      ),
+    })),
   createPublicRequest: (payload) =>
     set((state) => ({
       requests: [

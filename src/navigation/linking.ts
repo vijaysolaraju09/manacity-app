@@ -73,6 +73,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
           AdminServices: 'admin/services',
           AdminEvents: 'admin/events',
           AdminAssignments: 'admin/assignments',
+          AdminAnnouncements: 'admin/announcements',
         },
       },
     },
